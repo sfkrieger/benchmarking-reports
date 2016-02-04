@@ -5,11 +5,11 @@
 
 var str =  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-getRand = function(min, max) {
+var getRand = function(min, max) {
     return Math.random() * (max - min) + min;
 }
 
-generateArray = function(arrSize){
+var generateArray = function(arrSize){
 	var i, size = (typeof arrSize != 'undefined'? arrSize: 10000);
 	var arr = [];
 	for(i = 0; i < size; i++){
@@ -19,7 +19,7 @@ generateArray = function(arrSize){
 	return arr;
 }
 
-compare = function(first, second)
+var compare = function(first, second)
 {
     if (first == second)
         return 0;
@@ -29,11 +29,11 @@ compare = function(first, second)
         return 1; 
 }
 
-sort = function(arr){
+var sort = function(arr){
 	arr.sort(compare);
 }
 
-create_object = function(){
+var create_object = function(){
 	var obj = {};
 	for(var i = 0; i < 50 ; i++){
 		var propName = str.substring(i, 63);
@@ -43,7 +43,7 @@ create_object = function(){
 	return obj;
 }
 
-create_object_passing = function(){
+var create_object_passing = function(){
 	var obj = {};
 	for(var i = 0; i < 50 ; i++){
 		if(i % 2 == 0){
@@ -57,12 +57,12 @@ create_object_passing = function(){
 	return obj;
 }
 
-volley = function(obj, i){
+var volley = function(obj, i){
 	var propName = str.substring(i, 63);
 	obj[propName] = i;
 }
 
-create_object_pcompare = function(){
+var create_object_pcompare = function(){
 	var obj = {};
 	for(var i = 0; i < 50 ; i++){
 		if(i < 100){
@@ -77,13 +77,12 @@ create_object_pcompare = function(){
 	return obj;
 }
 
-doNothin = function(){
+var doNothin = function(){
 	return;
 }
 
 
 module.exports = {
-//		compare: compare,
 		generateArray: generateArray,
 		sort: sort,
 		create_object: create_object,

@@ -59,7 +59,6 @@ void Sort(const FunctionCallbackInfo<Value>& args) {
 
 	Handle<Array> arr = Handle<Array>::Cast(args[0]);
 	int size = arr->Length();
-//	printf("BEGIN ------- SIZE %i -------------", size);
 	double other_arr[size];
 	for (int i = 0; i < size; i++){
 		other_arr[i] = arr->Get(i)->NumberValue();
@@ -85,47 +84,14 @@ void CreateObject(const FunctionCallbackInfo<Value>& args){
 
 	  Local<Context> creationContext = obj->CreationContext();
 
-//	  printf("It is %i that the creation and local context of the isolate are the same", (context == creationContext));
-
 	  for(int i = 0; i < 50; i++){
-//		  string s = std::to_string(i);
-//		  char const *pchar = s.c_str();
-//
-//		  std::ostringstream ss;
-//		  ss << i;
-
 		  char *p = alphanum + i;
 		  obj->CreateDataProperty(creationContext, String::NewFromUtf8(isolate, p), Number::New(isolate, i));
 	  }
 
-//	  obj->CreationContext();
 	  args.GetReturnValue().Set(obj);
 }
 
-//void Sort(const FunctionCallbackInfo<Value>& args) {
-//	  Isolate* isolate = Isolate::GetCurrent();
-//	  HandleScope scope(isolate);
-//
-//  if (args.Length() < 1 || !args[0]->IsArray()) {
-//    isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "First argument should be an array")));
-//    return;
-//  }
-//
-//  Handle<Array> arr = Handle<Array>::Cast(args[0]);
-//  vector<double> v;
-//  for (int i = 0; i < arr->Length(); ++i) {
-//    v.push_back(arr->Get(i)->NumberValue());
-//  }
-//  sort(v.begin(), v.end());
-//  Handle<Array> res = Array::New(isolate, v.size());
-//  for (int i = 0; i < v.size(); ++i) {
-////	 printf("index %i, val %f", i, v[i]);
-//    res->Set(i, Number::New(isolate, v[i]));
-//  }
-//
-//  args.GetReturnValue().Set(res);
-//
-//}
 
 
 void Init(Handle<Object> exports) {
@@ -135,7 +101,7 @@ void Init(Handle<Object> exports) {
   NODE_SET_METHOD(exports, "create_object", CreateObject);
 }
 
-NODE_MODULE(add, Init)
+NODE_MODULE(c_mod, Init)
 
 
 

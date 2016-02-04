@@ -2,11 +2,11 @@
  * 
  */
 //========= JS ADD FUNCTIONS ===========
-addJS = function(a, b){
+var add_js = function(a, b){
 	return a + b;
 }
 
-addTemp = function(a, b){
+var add = function(a, b){
 	var first = a;
 	var second = b;
 	
@@ -14,12 +14,12 @@ addTemp = function(a, b){
 	return sum;
 }
 
-add_empty = function(a, b){
+var add_empty = function(a, b){
 	return;
 }
 
 module.exports = {
-		addJS : addJS,
-		addTemp : addTemp,
+		add_js : add_js,
+		add : add,
 		add_empty : add_empty,
 };
