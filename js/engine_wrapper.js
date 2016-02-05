@@ -2,6 +2,10 @@
  * 
  */
 var engine = require("./engine");
+var helpers = require("./helpers.js");
+var fs = require('fs');
+var file = './chart_data.json';
+
 var PAIRED_FUNCTIONS = ["sort", "create_object"];
 var TRICOMPARE = ["add", "add_empty"];
 var MAX_TIMES = 1000000;
@@ -17,20 +21,16 @@ var fnArgs = {
 var add = function(noTimes){
 	var results = engine.callingModules("add", [1,2], noTimes);
 //	results[add_js] = engine.benchmark(ALL_MODULES[3].jsAdd, args, noTimes);
-	console.log("Here are all the results %j", results);
+//	console.log("Here are all the results %j", results);
 	return results;
 }
-
-//var prepArgs = function(){
-//	
-//}
 
 /**
  * This method will call all the functions in the fnArgs object
  * 
  * It will call them a discrete amount of times and then will output all the results together for that given function 
  */
-var callAllFunctions = function(noTimes){
+var callAllFunctions = function(noTimes, fnArgs){
 	var functions = Object.getOwnPropertyNames(fnArgs);
 	var results = {};
 	for(var i = 0; i < functions.length; i++)
@@ -38,35 +38,37 @@ var callAllFunctions = function(noTimes){
 	return results;
 }
 
-var callTailoredObjectFunctions = function(){
+var callTailoredObjectFunctions = function(max, noTimes){
+	var results = {};
+	if(typeof max == 'undefined')
+		max = MAX_TIMES;
 	
+	for(var size = 1; size < max; size = size * 10){
+		var result = engine.callingModules("sort", [helpers.generateArray(size)], noTimes);
+//		result["size"] = size;
+		results[size] = result;
+		results["times"] = noTimes;
+//		console.log("Here are the results so far: %j", results);
+	}
+	
+	return results;
 }
 
+var writeToFile = function(allResults){
+	fs.writeFileSync(file, JSON.stringify(allResults));
+}
+
+
 var writeOutAllResults = function(results){
+	console.log("Here are all the results: %j", results);
 	var functions = Object.getOwnPropertyNames(results);
 //	console.log("Writing out all the results %j\nProperties: %j", results, functions);
 	
-	for(var i = 0; i < functions.length; i++)
-		writeResults(results[functions[i]], functions[i]);
-//		results[functions[i]] = engine.callingModules(functions[i], fnArgs[i], noTimes)
-}
-
-var outputEverything = function(){
-	for(var times = 1; times < MAX_TIMES; times = times * 10){
-		console.log("\n\n ================ %s ITERATION(S) ================", times);
-		writeOutAllResults(callAllFunctions(times));
+	for(var i = 0; i < functions.length; i++){
+		var result = results[functions[i]]; 
+		writeResults(result,functions[i]);
 	}
 }
-
-//var benchmarkIncremental = function(max){
-//	if(typeof max == 'undefined')
-//		max = MAX;
-//	for(var size = 1; size < max; size = size * 10){
-//		var result = benchmark(module[fn_name], args, times);
-//		result["size"] = size;
-//		results[modules[i]] = result;
-//	}
-//}
 
 var writeResults = function(results, functionName){
 	var modules = Object.getOwnPropertyNames(results);
@@ -80,8 +82,28 @@ var writeResults = function(results, functionName){
 	
 }
 
+var outputEverything = function(){
+	var all_output= {};
+	
+	for(var times = 1; times < MAX_TIMES; times = times * 10){
+		console.log("\n\n ================ %s ITERATION(S) ================", times);
+		var allFnResults = callAllFunctions(times, fnArgs);
+//		var tailoredRes = callTailoredObjectFunctions(times);
+		all_output[times] = allFnResults;
+//		console.log("Here are the things to add to the file: \n%j\n is all the results, and \n%j\n is the tailored ones.", allFnResults, tailoredRes);
+
+		
+		writeOutAllResults(allFnResults);
+	}
+	
+	fs.writeFileSync(file, JSON.stringify(all_output));
+}
+
+
+
 module.exports = {
 		add: add,
 		writeResults: writeResults,
+		callTailoredObjectFunctions: callTailoredObjectFunctions,
 		outputEverything: outputEverything
 };
