@@ -17,26 +17,10 @@ var NO_TIMES = 100000;
 //---------- RUNNING IN SEQUENCE ------------
 //runs the add function with parameters
 var run = function(fn, noTimes, arr){
-	var i;
-	var sum = 0;
-	var result;
-//	for(i = 0; i < noTimes; i++){
-//		if(typeof arr != 'undefined'){
-//			 result = fn.apply(null, arr);
-//		}else{
-//			 result = fn();
-//		}
-//	}
-	
-	for(i = 0; i < noTimes; i++){
-		if(typeof arr != 'undefined'){
-			 fn.apply(null, arr);
-		}else{
-			 fn();
-		}
-	}
-	
-//	return result;
+	var parameters = (typeof arr == 'undefined' ? [] : arr);
+	for(var i = 1; i < noTimes; i++)
+			 result = fn.apply(null, parameters);
+	return fn.apply(null, parameters);
 }
 
 //--------- TIMESTAMPING ------------

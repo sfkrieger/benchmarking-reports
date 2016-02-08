@@ -39,7 +39,7 @@ var generateFields = function(times, object){
  * ------ LOCATION AND MANIPULATION OBJECTS -------
  */
 var location = function(){
-	var location = {
+	var loc = {
 			"latitude" : 40.71,
 			"longitude" : -74.01,
 			"samples" : [
@@ -57,7 +57,7 @@ var location = function(){
 			             }
 			          ]
 		};
-	return location;
+	return loc;
 }
 
 var manipulate = function(){
