@@ -5,6 +5,10 @@
 
 var str =  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
+/** ----- CREATING LARGE OBJECTS/ARRAYS ------
+ * 
+ */
+
 var getRand = function(min, max) {
     return Math.random() * (max - min) + min;
 }
@@ -19,73 +23,55 @@ var generateArray = function(arrSize){
 	return arr;
 }
 
-var compare = function(first, second)
-{
-    if (first == second)
-        return 0;
-    if (first < second)
-        return -1;
-    else
-        return 1; 
-}
-
-var sort = function(arr){
-	arr.sort(compare);
-}
-
-var create_object = function(){
-	var obj = {};
-	for(var i = 0; i < 50 ; i++){
-		var propName = str.substring(i, 63);
-		obj[propName] = i;
+var generateFields = function(times, object){
+	//create fields 1 - 1000 for object, and assign them a random number
+	var max = (typeof times != 'undefined' ? times : 10000000);
+	var object = (typeof object != 'undefined' ? object : {});
+	var i = 0;
+	while( i < max ){
+		object[i] = getRand(1, 500);
+		i++;
 	}
-	
-	return obj;
+	return object;
 }
 
-var create_object_passing = function(){
-	var obj = {};
-	for(var i = 0; i < 50 ; i++){
-		if(i % 2 == 0){
-			var propName = str.substring(i, 63);
-			obj[propName] = i;
-		}else{
-			volley(obj, i);
-		}
-	}
-	
-	return obj;
+/**
+ * ------ LOCATION AND MANIPULATION OBJECTS -------
+ */
+var location = function(){
+	var location = {
+			"latitude" : 40.71,
+			"longitude" : -74.01,
+			"samples" : [
+			             {
+			                "date" : "2014-06-07",
+			                "rainfall" : "2"
+			             },
+			             {
+			                "date" : "2014-08-12",
+			                "rainfall" : "0.5"
+			             },
+			             {
+			                "date" : "2014-09-29",
+			                "rainfall" : "1.25"
+			             }
+			          ]
+		};
+	return location;
 }
 
-var volley = function(obj, i){
-	var propName = str.substring(i, 63);
-	obj[propName] = i;
+var manipulate = function(){
+	var manipulate = {
+			latitude: 18.0,
+			value: 36.0,
+			manipulatedText: "Some text",
+			manipulatedValue: 1234
+	};
+	return manipulate;
 }
-
-var create_object_pcompare = function(){
-	var obj = {};
-	for(var i = 0; i < 50 ; i++){
-		if(i < 100){
-			var propName = str.substring(i, 63);
-			obj[propName] = i;
-		}
-		
-		if(i % 2 != 0)
-			doNothin();
-	}
-	
-	return obj;
-}
-
-var doNothin = function(){
-	return;
-}
-
 
 module.exports = {
 		generateArray: generateArray,
-		sort: sort,
-		create_object: create_object,
-		create_object_pcompare: create_object_pcompare,
-		create_object_passing: create_object_passing
+		manipulate: manipulate,
+		location: location
 };

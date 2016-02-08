@@ -2,7 +2,7 @@
  * 
  */
 var engine = require("./engine");
-var helpers = require("./helpers.js");
+var helpers = require("../js/js.js");
 var fs = require('fs');
 var file = './chart_data.json';
 

@@ -2,10 +2,12 @@
  * 
  */
 var all_modules = {
-		helpers : require("./helpers.js"),
-		nan_c : require('bindings')('ncmod.node'),
-		c : require('bindings')('cmod.node'),
-		js : require("./js.js")
+		helpers : require("../js/helpers.js"),
+//		nan_c : require('bindings')('ncmod.node'),
+//		c : require('bindings')('cmod.node'),
+		nan_c : require('../cpp/build/Debug/ncmod.node'),
+		c : require('../cpp/build/Debug/cmod.node'),
+		js : require("../js/js.js")
 };
 
 var NO_TIMES = 100000;
@@ -17,13 +19,24 @@ var NO_TIMES = 100000;
 var run = function(fn, noTimes, arr){
 	var i;
 	var sum = 0;
+	var result;
+//	for(i = 0; i < noTimes; i++){
+//		if(typeof arr != 'undefined'){
+//			 result = fn.apply(null, arr);
+//		}else{
+//			 result = fn();
+//		}
+//	}
+	
 	for(i = 0; i < noTimes; i++){
 		if(typeof arr != 'undefined'){
-			fn.apply(null, arr);
+			 fn.apply(null, arr);
 		}else{
-			fn();
+			 fn();
 		}
 	}
+	
+//	return result;
 }
 
 //--------- TIMESTAMPING ------------

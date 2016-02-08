@@ -2,7 +2,7 @@
  * 
  */
 
-var add = require("./js/benchmarking.js");
+var add = require("./benchmarking.js");
 console.log(" ----- Cost to add -------");
 var results = add.benchmarkAdd();
 add.toConsole(results);

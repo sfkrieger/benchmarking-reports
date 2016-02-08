@@ -8,8 +8,8 @@ using namespace std;
 using namespace v8;
 static char alphanum[] =
         "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-static const char supercal[] =
-		"supercalafragilisticexpealidotiouseventhoughthesoundofthisis";
+//static const char supercal[] =
+//		"supercalafragilisticexpealidotiouseventhoughthesoundofthisis";
 
 int compare (const void * a, const void * b)
 {
@@ -82,16 +82,54 @@ void CreateObject(const FunctionCallbackInfo<Value>& args){
 	  Local<Context> context = isolate->GetCurrentContext();
 	  Local<Object> obj = Object::New(isolate);
 
-	  Local<Context> creationContext = obj->CreationContext();
-
 	  for(int i = 0; i < 50; i++){
 		  char *p = alphanum + i;
-		  obj->CreateDataProperty(creationContext, String::NewFromUtf8(isolate, p), Number::New(isolate, i));
+		  obj->CreateDataProperty(context, String::NewFromUtf8(isolate, p), Number::New(isolate, i));
 	  }
 
 	  args.GetReturnValue().Set(obj);
 }
 
+void GetProperties(const v8::FunctionCallbackInfo<v8::Value>& args){
+	Handle<Object> location = Handle<Object>::Cast(args[0]);
+	Local<Array> names = location->GetOwnPropertyNames();
+
+	int len = 0;
+	if (names->IsArray()) {
+	    len = names->Length();
+	    printf("length %u\n", len);
+	}
+
+	for (int i = 0; i < len; i++) {
+	    Local<Object> propName = Local<Object>::Cast(names->Get(i));
+	    Local<String> result = propName->ToString();
+	    String::Utf8Value utf8(result);
+	    printf("%s\n", *utf8);
+	}
+}
+
+void ManipulateProperties(const v8::FunctionCallbackInfo<v8::Value>& args){
+	Handle<Object> locationObject = Handle<Object>::Cast(args[0]);
+	Handle<Object> manipulations = Handle<Object>::Cast(args[1]);
+	Local<Array> names = manipulations->GetOwnPropertyNames();
+	// We will be creating temporary handles so we use a handle scope.
+
+	//iterate through the properties in the array
+    //if its in both, then manipulate
+	for (uint32_t i = 0; i < names->Length(); i++) {
+	    Local<String> propValue = Local<String>::Cast(manipulations->Get(names->Get(i)));
+//	    Local<Value> propName = manipulations->Get(names->Get(i));
+
+//	    just try getting the property using the v8 constructs
+	    locationObject->Set(names->Get(i), propValue);
+
+		args.GetReturnValue().Set(manipulations->Get(names->Get(i)));
+//	    std::cout << "This is the property name (fingers crossed): " << std::endl;
+//	    std::cout << v8::String::Utf8Value(propStr) << std::endl;
+
+	}
+
+}
 
 
 void Init(Handle<Object> exports) {
@@ -99,6 +137,8 @@ void Init(Handle<Object> exports) {
   NODE_SET_METHOD(exports, "add_empty", Add);
   NODE_SET_METHOD(exports, "sort", Sort);
   NODE_SET_METHOD(exports, "create_object", CreateObject);
+  NODE_SET_METHOD(exports, "get_properties", GetProperties);
+  NODE_SET_METHOD(exports, "modify_properties", ManipulateProperties);
 }
 
 NODE_MODULE(c_mod, Init)
