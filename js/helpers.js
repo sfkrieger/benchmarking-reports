@@ -23,14 +23,16 @@ var generateArray = function(arrSize){
 	return arr;
 }
 
-var generateFields = function(times, object){
+var generateFields = function(times){
 	//create fields 1 - 1000 for object, and assign them a random number
 	var max = (typeof times != 'undefined' ? times : 10000000);
-	var object = (typeof object != 'undefined' ? object : {});
-	var i = 0;
-	while( i < max ){
-		object[i] = getRand(1, 500);
-		i++;
+	var object = {};
+	var property, val;
+	for(var i = 0; i < max; i++){
+		property = Math.floor(getRand( 1, 99999)).toString();
+		val = Math.floor(getRand( 1, 999999));
+		console.log("Property - %s, val - %s, Object: %j", property, val, object);
+		object[property] = val;
 	}
 	return object;
 }
@@ -72,6 +74,7 @@ var manipulate = function(){
 
 module.exports = {
 		generateArray: generateArray,
+		generateFields: generateFields,
 		manipulate: manipulate,
 		location: location
 };

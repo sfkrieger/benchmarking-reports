@@ -75,7 +75,4 @@ module.exports = {
 		calculateSum : calculateSum,
 		generateSamples : generateSamples,
 		generateFields : generateFields,
-		manipulate: manipulate,
-		reset: reset,
-		location: location
 };

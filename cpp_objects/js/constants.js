@@ -34,8 +34,7 @@ var manipulate = function(){
 	return manipulate;
 }
 
-module.exports {
+module.exports = {
 	manipulate: manipulate,
-	reset: reset,
 	location: location
 }

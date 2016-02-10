@@ -76,36 +76,71 @@ void Sort(const FunctionCallbackInfo<Value>& args) {
 
 }
 
-void CreateObject(const FunctionCallbackInfo<Value>& args){
-	  Isolate* isolate = args.GetIsolate();
-	  // Creates a new Object on the V8 heap
-	  Local<Context> context = isolate->GetCurrentContext();
-	  Local<Object> obj = Object::New(isolate);
+void CreateObject(const FunctionCallbackInfo<Value>& args) {
+	Isolate* isolate = args.GetIsolate();
+	// Creates a new Object on the V8 heap
+	Local<Context> context = isolate->GetCurrentContext();
+	Local<Object> obj = Object::New(isolate);
 
-	  for(int i = 0; i < 50; i++){
-		  char *p = alphanum + i;
-		  obj->CreateDataProperty(context, String::NewFromUtf8(isolate, p), Number::New(isolate, i));
-	  }
+	if (args.Length() < 1) {
+		isolate->ThrowException(
+				Exception::TypeError(
+						String::NewFromUtf8(isolate,
+								"Wrong number of arguments")));
+		return;
+	}
 
-	  args.GetReturnValue().Set(obj);
+	if (!args[0]->IsNumber()) {
+		isolate->ThrowException(
+				Exception::TypeError(
+						String::NewFromUtf8(isolate, "Wrong arguments")));
+		return;
+	}
+
+	double size = args[0]->NumberValue();
+	if(size > 999)
+		size = 999;
+
+	for (int i = 0; i < size; i++) {
+		char numbers[4];
+		numbers[3] = '\0';
+		int buffIndex = 0;
+		int val = i;
+		for (int index = 100; index > 0; index = index / 10) {
+			int intati = val / index;
+			numbers[buffIndex] = '0' + intati;
+//			printf("%i:%c\t", i, numbers[buffIndex]);
+			buffIndex++;
+			val = val % index;
+		}
+//		printf("\nHeres the buffer at the end %s\n", numbers);
+		//	char *p = alphanum + i;
+			obj->CreateDataProperty(context, String::NewFromUtf8(isolate, numbers),
+					Number::New(isolate, i));
+
+	}
+
+	args.GetReturnValue().Set(obj);
 }
 
 void GetProperties(const v8::FunctionCallbackInfo<v8::Value>& args){
 	Handle<Object> location = Handle<Object>::Cast(args[0]);
 	Local<Array> names = location->GetOwnPropertyNames();
-
+//	printf("Hi from the deepc. Here's your array info: ");
 	int len = 0;
 	if (names->IsArray()) {
 	    len = names->Length();
-	    printf("length %u\n", len);
+//	    printf("length %u, and properties - ", len);
 	}
 
 	for (int i = 0; i < len; i++) {
 	    Local<Object> propName = Local<Object>::Cast(names->Get(i));
 	    Local<String> result = propName->ToString();
 	    String::Utf8Value utf8(result);
-	    printf("%s\n", *utf8);
+//	    printf("%s,", *utf8);
 	}
+//	printf("\n");
+	return;
 }
 
 void ManipulateProperties(const v8::FunctionCallbackInfo<v8::Value>& args){

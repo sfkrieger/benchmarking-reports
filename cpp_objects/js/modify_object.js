@@ -1,7 +1,10 @@
 var addon = require('../cpp/build/Debug/object_manipulation');
 var helper = require('./modify_object_helpers.js');
+var constants = require('./constants.js');
 var locationf = constants.location;
 var manipulatef = constants.manipulate;
+var manipulate = constants.manipulate();
+var location = constants.location();
 
 var changeProperties = function(){
 	var location = locationf();
