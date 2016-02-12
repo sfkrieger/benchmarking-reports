@@ -45,6 +45,9 @@ var getAddResults = function(whichAdd){
 //	fs.appendFileSync(new_file, toFile);
 };
 
+var sortNumber = function(a,b) {
+    return a - b;
+}
 var getVariableInputResults = function(whichFunction){
 	var results = output[whichFunction];
 	var displayName;
@@ -80,14 +83,19 @@ var getVariableInputResults = function(whichFunction){
 		var c_results = results[sizes[i]].c;
 		var js_results = results[sizes[i]].js;
 		
-		var c_data_row = [iterationN];
-		var js_data_row = [iterationN];
+		var c_data_row = [];
+		var js_data_row = [];
 		
 		for(var iterationCountIndex = 0; iterationCountIndex < iterationArr.length; iterationCountIndex++){
 			c_data_row.push(c_results[iterationArr[iterationCountIndex]].mean);
 			js_data_row.push(js_results[iterationArr[iterationCountIndex]].mean);
 		}
 		
+		c_data_row.sort(sortNumber);
+		js_data_row.sort(sortNumber);
+		
+		c_data_row.unshift(iterationN);
+		js_data_row.unshift(iterationN);
 		console.log("---Size %s---\nHere's the current row for c: %j\nHeres the current row for js: %j", sizes[i], c_data_row, js_data_row);
 		c_data.push(c_data_row);
 		js_data.push(js_data_row);
