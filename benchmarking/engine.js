@@ -2,19 +2,11 @@
  * 
  */
 var constants = require('../package.json').constants;
+var microtime = require('microtime');
+
 var MIN = constants.min_iterations;
 var MAX = constants.max_iterations;
 var INTERVAL = constants.interval;
-
-var all_modules = {
-		helpers : require("../js/helpers.js"),
-//		nan_c : require('bindings')('ncmod.node'),
-//		c : require('bindings')('cmod.node'),
-		nan_c : require('../cpp/build/Debug/ncmod.node'),
-		c : require('../cpp/build/Debug/cmod.node'),
-		js : require("../js/js.js")
-};
-
 //========= FUNCTIONS FOR BENCHMARKING
 
 //---------- RUNNING IN SEQUENCE ------------
@@ -22,20 +14,23 @@ var all_modules = {
 var run = function(fn, noTimes, arr){
 	var parameters = (typeof arr == 'undefined' ? [] : arr);
 	for(var i = 1; i < noTimes; i++)
-			 result = fn.apply(null, parameters);
+			 fn.apply(null, parameters);
 	return fn.apply(null, parameters);
 }
 
 //--------- TIMESTAMPING ------------
 var benchmark = function(fn, args, times){
 	var noTimes = (typeof times != 'undefined'? times: MAX);
-	var start = process.hrtime();
+//	var start = process.hrtime();
+	var start = microtime.now();
 	var result = run(fn, noTimes, args);
-	var end = process.hrtime();
-	var duration = (end[0] * 1000000 + end[1] / 1000) - (start[0] * 1000000 + start[1] / 1000);
+	var end = microtime.now();
+	var duration = end - start;
+//	var end = process.hrtime();
+//	var duration = (end[0] * 1000000 + end[1] / 1000) - (start[0] * 1000000 + start[1] / 1000);
 	return {
-		duration: duration, 
-		result: result
+		duration: duration 
+//		result: result
 	};
 }
 

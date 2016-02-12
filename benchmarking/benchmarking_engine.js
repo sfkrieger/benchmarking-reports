@@ -35,7 +35,7 @@ var benchmarkSort = function(){
 	var results = {};
 	for(var i = MIN_SIZE; i <= MAX_SIZE; i = i * 10){
 		var array = helpers.generateArray(i);
-		var result = callInBoth("sort", [array], 10, 1, 1000);
+		var result = callInBoth("sort", [array], 10, 1, 10000);
 		results[i] = result;
 //		result["size"] = i;
 //		results.push(result);
@@ -50,12 +50,12 @@ var benchmarkCreateObject = function(){
 	var manipulatePropresults = {};
 	var coresult, getpropresult, manipulatepropresult;
 	for(var i = MIN_SIZE; i <= MAX_SIZE; i = i * 10){
-		coresult = callInBoth("create_object", [i], 10, 1, 1000);
+		coresult = callInBoth("create_object", [i], 10, 1, 10000);
 //		coresult["size"] = i;
 		createObjectresults[i] = coresult;
 //		createObjectresults.push(coresult);
 		
-		getpropresult = callInBoth("get_properties", [js.create_object(i)], 10, 1, 1000);
+		getpropresult = callInBoth("get_properties", [js.create_object(i)], 10, 1, 100000);
 		getPropresults[i] = getpropresult;
 //		getpropresult["size"] = i;
 //		getPropresults.push(getpropresult);

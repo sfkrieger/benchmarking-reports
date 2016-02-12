@@ -1,94 +1,143 @@
 /**
  * 
  */
+var util = require('util');
+var benchmarking = require("../benchmarking/benchmarking_engine");
+//var output = benchmarking.benchmarkAllFunctions();
+
 var fs = require('fs');
-var file = './chart_data.json';
-var new_file = './restructuredResults.js';
-var results = JSON.parse(fs.readFileSync(file,  "utf-8"));
-//var fd = fs.openSync(file);
-console.log("Here it comes! %j", results);
+var file = "./charting/log.json"
+var new_file = './charting/restructuredResults.js';
+var fnsSoFar = ["add","add_empty", "modify_properties"];
+var candlestickFns = ["sort_c","sort_js", "create_object_c", "create_object_js", "get_properties_c", "get_properties_js"];
+var output = JSON.parse(fs.readFileSync(file,  "utf-8"));
 
-var graphNames;
-var functions;
-var restructuredResults = {
-		functionNames : []
+var getAddResults = function(whichAdd){
+	var results = output[whichAdd];
+	var displayName;
+	if(whichAdd == 'add')
+		displayName = "Add";
+	else if(whichAdd == 'add_empty')
+		displayName = "Add Empty";
+	else if(whichAdd == 'modify_properties')
+		displayName = 'Manipulate Properties';
+	
+	displayName = displayName + " Function";
+//	var displayName = (whichAdd == 'add' ? 'Add Function' : 'Add Empty Function');
+	var data = [['Iteration Count', 'C', 'Javascipt']];
+	var iterationArr = Object.getOwnPropertyNames(results.c); 
+	
+	for(var i = 0; i < iterationArr.length; i++){
+		var iterationNumber = iterationArr[i];
+		var dataRow = [iterationNumber];
+//		console.log("\n\nHere are the results for %s: %j\nThis is the iterationNumber %s\nThis is the mean for C - %s, and this is the mean for JS - %s", 
+//				whichAdd, results, iterationNumber, results.c[iterationNumber], results.js[iterationNumber]);
+		dataRow.push(results.c[iterationNumber].mean);
+		dataRow.push(results.js[iterationNumber].mean);
+		data.push(dataRow);
+	}
+	
+	return { display_name : displayName , 
+						data: data
+						};
+
+//	var toFile = "\nvar " + whichAdd + " = " + JSON.stringify(addVariable);
+//	fs.appendFileSync(new_file, toFile);
 };
 
-var get_stuff = function(){
-	noTimes = Object.getOwnPropertyNames(results);
+var getVariableInputResults = function(whichFunction){
+	var results = output[whichFunction];
+	var displayName;
+	var c = {};
+	var js = {};
+	console.log("\n\n%s function\n-----------", whichFunction);
+	if(whichFunction == 'sort')
+		displayName = "Sort";
+	else if(whichFunction == 'create_object')
+		displayName = "Create Object";
+	else if(whichFunction == 'get_properties')
+		displayName = 'Get Properties';
+
+	displayName = displayName + " Function";
 	
-	//now retrieve all of functions for each tick
+	var sizes = Object.getOwnPropertyNames(results); 
+	var firstRow = ['Input Size'];
+	firstRow.push.apply(firstRow, sizes);
+
+	//just need to get all the info for doing the operation on a single input (to initialize everything)
+	var perSizeObj = results[sizes[0]].c; //arbitrarily choosing c
+	var iterationArr = Object.getOwnPropertyNames(perSizeObj);
+
 	
+		console.log("Here's the first row of the candlestick arrays: %j, the first element of the sort for c: %j, and the number of different " +
+				"iterations %j.", firstRow, perSizeObj, iterationArr);
+
+	var c_data = [];
+	var js_data = [];
 	
-//	console.log("\nHeres the number of times %j\n, and the properties \n%j", noTimes, functions);
-	setupFields();
-	
-	//for each number of times, you want to
-	
-	//create a row of data for each given function
-	for(var i = 0; i < noTimes.length; i++){
-		var curNoTimes = noTimes[i];
-		var noTimesObj = results[curNoTimes]; //this is the object at eg. 1000
+	for(var i = 0; i < sizes.length; i++){
+		var iterationN = parseInt(sizes[i]);
+		var c_results = results[sizes[i]].c;
+		var js_results = results[sizes[i]].js;
 		
-		for(var fnIndex = 0; fnIndex < functions.length; fnIndex++){
-			var dataRow = [parseInt(curNoTimes)];
-			var fnName = functions[fnIndex];
-			
-			//get the object at this time associated with this function (if it exists)
-			var fnObj = noTimesObj[fnName];
-			
-			if(typeof fnObj != 'undefined'){ //fn exists at this nubmer of times, now use the modules that this function has
-				var fnModules = restructuredResults[fnName].modules;
-				
-				//use these modules to add retrieve the data from the results object in the same order
-				for(var moduleNumber = 0; moduleNumber < fnModules.length; moduleNumber++){
-					var duration = fnObj[fnModules[moduleNumber]].duration;
-					dataRow.push(duration);
-				}
-				
-				console.log("Here's the data row \n%j associated with %s function at %s number of times", dataRow, fnName, curNoTimes);
-				//add all the functions data to the row
-				restructuredResults[functions[fnIndex]].data.push(dataRow);
-			}
+		var c_data_row = [iterationN];
+		var js_data_row = [iterationN];
+		
+		for(var iterationCountIndex = 0; iterationCountIndex < iterationArr.length; iterationCountIndex++){
+			c_data_row.push(c_results[iterationArr[iterationCountIndex]].mean);
+			js_data_row.push(js_results[iterationArr[iterationCountIndex]].mean);
 		}
-	}
-	
-	console.log("Heres all the restructured results loooll: %j", restructuredResults);
-	writeRestructuredResToFile();
-};
-
-var setupFields = function(){
-	var firstObject = results[Object.keys(results)[0]];
-	functions = Object.getOwnPropertyNames(firstObject);
-	
-	//for each function 
-	//create it as an object (1) find out what the modules are
-	for(var i = 0; i < functions.length; i++){
-		var fn_name = functions[i];
-		var displayName = capitalizeFirstLetter(fn_name);
-		var fn_obj = firstObject[functions[i]];
-		var modules = Object.getOwnPropertyNames(fn_obj);
 		
-		restructuredResults[fn_name] = {
-				"modules" : modules,
-				"displayName": displayName,
-				"data": []
-		};
-		restructuredResults.functionNames.push(fn_name);
+		console.log("---Size %s---\nHere's the current row for c: %j\nHeres the current row for js: %j", sizes[i], c_data_row, js_data_row);
+		c_data.push(c_data_row);
+		js_data.push(js_data_row);
+		
 	}
 	
-	console.log("\nHere's the restructured results %j", restructuredResults);
+	var c_result_obj = {
+			display_name: "C " + displayName,
+			data: c_data
+	};
 	
+	var js_result_obj = {
+			display_name: "JS " + displayName,
+			data: js_data
+	};
+	
+	var toRet = { 
+			"c": c_result_obj,
+			"js": js_result_obj
+		};
+	console.log(toRet);
+	return toRet;
+};
+
+var getRestructuredResults = function(){
+	var results = { 
+			"functionNames" : fnsSoFar,
+			"candlesticks" : candlestickFns
+			};
+	
+	results["add"] = getAddResults("add");
+	results["add_empty"] = getAddResults("add_empty");
+	results["modify_properties"] = getAddResults("modify_properties");
+	
+	var sort = getVariableInputResults("sort");
+	results["sort_c"] = sort.c;
+	results["sort_js"] = sort.js;
+
+	var create_object = getVariableInputResults("create_object");
+	results["create_object_c"] = create_object.c;
+	results["create_object_js"] = create_object.js;
+	
+	var get_properties = getVariableInputResults("get_properties");
+	results["get_properties_c"] = get_properties.c;
+	results["get_properties_js"] = get_properties.js;
+
+	var toFile = "var results = " + JSON.stringify(results);
+	console.log(util.inspect(results, false, null));
+	fs.writeFile(new_file, toFile); //to reset the file
 
 };
 
-var writeRestructuredResToFile = function(){
-	fs.writeFileSync(new_file, "var results = " + JSON.stringify(restructuredResults));
-
-}
-
-function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-get_stuff();
+getRestructuredResults();
